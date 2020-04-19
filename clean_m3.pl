@@ -77,6 +77,7 @@ $svg =~ s!class="Hook"!!g;
 $svg =~ s!class="Articulation"!!g;
 $svg =~ s!class="TrillSegment"!!g;
 $svg =~ s!class="Tremolo"!!g;
+$svg =~ s!class="Arpeggio"!!g;
 
 # organize whitespaces
 $svg =~ s!^  <!____<!msg;
@@ -95,7 +96,7 @@ my @convert_classes = qw(
 	Stem        Tuplet   Beam       LyricsLineSegment
 );
 foreach my $class (@convert_classes) {
-	$svg =~ s!(\bclass="$class\b)!$1 v3"!g;
+	$svg =~ s!(\bclass="$class\b)!$1 v3!g;
 }
 
 # write to file
