@@ -33,7 +33,9 @@ That's why we have 2 scripts now.
 
 - `git clone git@github.com:truj/musescore-svg2web.git`
 - Open `clean_m2.pl` and/or `clean_m3.pl` with a text editor and adjust the line beginning with `my $TARGET_DIR = ...` to your needs. This is the directory where you want the cleaned SVGs to be copied into.
-- Create your score with Musescore. Adjust the size with right-click > page settings. Then change the width.
+- Create your score with Musescore. Adjust the size:
+  - Musescore 2: right-click > page settings. Then change the width.
+  - Musescore 3: Format > page settings. Then change the width.
 - Export your svg file from Musescore and save it in the same directory like clean_m2.pl or clean_m3.pl
 - If you use Musescore 2 to export the SVG, you need `clean_m2.pl` for the cleanup. If you use Musescore 3, you need `clean_m3.pl`.
 - Call the script and provide the SVG's filename as the only parameter.
