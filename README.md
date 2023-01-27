@@ -39,12 +39,13 @@ That's why we have 2 scripts now.
 - Export your svg file from Musescore and save it in the same directory like clean_m2.pl or clean_m3.pl
 - If you use Musescore 2 to export the SVG, you need `clean_m2.pl` for the cleanup. If you use Musescore 3, you need `clean_m3.pl`.
 - Call the script and provide the SVG's filename as the only parameter.
+- Depending on some circumstances, inkscape may open the save dialog. In this case, click on save, and inkscape closes again.
 - After the script has created the intermediate file, it shows the move command it wants to perform. Type upper-cased 'Y' and enter, if you agree. Then the file will be moved.
 - In your web project, add a SASS or CSS file containing the needed classes. Otherwise your SVG looks crippled because the style information is missing.
 
 Get inspiration by the following SASS file: https://github.com/truj/midica.org/blob/master/src/assets/scss/pages/midicapl.scss
 
-You need is something like this:
+What you need is something like this:
 
 ```
 svg {

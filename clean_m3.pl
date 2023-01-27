@@ -29,7 +29,10 @@ else {
 }
 
 # convert
-system "inkscape --verb=FitCanvasToDrawing --verb=FileSave --verb=FileClose --verb=FileQuit '$file'";
+# The first version doesn't work any more on my system - probably due to a bug in inkscape.
+# The second one works but it needs the GUI and requires one extra click.
+#system "inkscape --verb=FitCanvasToDrawing --verb=FileSave --verb=FileClose --verb=FileQuit '$file'";
+system "inkscape --actions='FileSave;FitCanvasToDrawing;FileQuit' --with-gui '$file'";
 
 # get content
 my $svg = '';
@@ -41,7 +44,7 @@ close $in_fh or die "close failed: $!\n";
 
 # find and convert height
 my $height = 0;
-if ($svg =~ m/height="([0-9.]+)"/) {
+if ($svg =~ m/height="([0-9.]+)(px)?"/) {
 	$height = $1;
 }
 die "height not found\n" if ! $height;
@@ -56,28 +59,39 @@ $svg =~ s!<defs[^>]+>!!msg;
 $svg =~ s!<metadata.+</metadata>!!msg;
 $svg =~ s!<title.+</title>!!msg;
 $svg =~ s!<desc.+</desc>!!msg;
-$svg =~ s!xmlns.+"!!g;
-$svg =~ s!sodipodi:.+"!!g;
-$svg =~ s!inkscape:.+"!!g;
-$svg =~ s!id="[^"]+"!!g;
-$svg =~ s!width="[^"]+"!!g;
-$svg =~ s!height="[^"]+"!!g;
-$svg =~ s!style="[^"]*stroke\-width:12\.5;[^"]*"!REPLACE=2.5!g; # special case: <polyline class="BarLine" ... style="...;stroke-width:2.5;..."
-$svg =~ s!style="[^"]+"!!g;
-$svg =~ s!version="1.2"!style="height: $height;"!g;
+$svg =~ s!xmlns=".+?"!!g;
+$svg =~ s!xmlns:\w+=".+?"!!g;
+$svg =~ s! sodipodi:.+"!!g;
+$svg =~ s! inkscape:.+"!!g;
+$svg =~ s! id="[^"]+"!!g;
+$svg =~ s! style="[^"]*stroke\-width:12\.5;[^"]*"!REPLACE=2.5!g; # special case: <polyline class="BarLine" ... style="...;stroke-width:2.5;..."
+$svg =~ s!<polyline\s+class="BarLine"([^>]+)stroke\-width="12\.50?"!<polyline class="BarLine25" $1!msg; # musescore 3.2.3
+# die substr $svg, 0, 3000;
+$svg =~ s! style="[^"]+"!!g;
+$svg =~ s! version="1.2"!style="height: $height;"!g;
+
+# remove unneeded attributes
+$svg =~ s! baseProfile="tiny"!!g;
+$svg =~ s! width="[^"]+"!!g;
+$svg =~ s! height="[^"]+"!!g;
+$svg =~ s! fill="none"!!g;
+$svg =~ s! stroke="#000000"!!g;
+$svg =~ s! stroke\-width="\d+(\.\d+)?"!!g;
+$svg =~ s! stroke\-linejoin="bevel"!!g;
+$svg =~ s! stroke\-linecap="square"!!g;
 
 # remove unneeded classes (some are still needed)
-$svg =~ s!class="Note"!!g;
-$svg =~ s!class="Clef"!!g;
-$svg =~ s!class="TimeSig"!!g;
-$svg =~ s!class="Rest"!!g;
-$svg =~ s!class="Beam"!!g;
-$svg =~ s!class="StaffText"!!g;
-$svg =~ s!class="Hook"!!g;
-$svg =~ s!class="Articulation"!!g;
-$svg =~ s!class="TrillSegment"!!g;
-$svg =~ s!class="Tremolo"!!g;
-$svg =~ s!class="Arpeggio"!!g;
+$svg =~ s! class="Note"!!g;
+$svg =~ s! class="Clef"!!g;
+$svg =~ s! class="TimeSig"!!g;
+$svg =~ s! class="Rest"!!g;
+$svg =~ s! class="Beam"!!g;
+$svg =~ s! class="StaffText"!!g;
+$svg =~ s! class="Hook"!!g;
+$svg =~ s! class="Articulation"!!g;
+$svg =~ s! class="TrillSegment"!!g;
+$svg =~ s! class="Tremolo"!!g;
+$svg =~ s! class="Arpeggio"!!g;
 
 # organize whitespaces
 $svg =~ s!^  <!____<!msg;
@@ -86,6 +100,7 @@ $svg =~ s!____!\n\t!msg;
 $svg =~ s! >!>!g;
 $svg =~ s!> !>!g;
 $svg =~ s!</svg>!\n</svg>!g;
+$svg =~ s!><!>\n\t<!g;
 
 # special case: <polyline class="BarLine" ... style="...;stroke-width:12.5;..."
 $svg =~ s!<polyline class="BarLine" (points="[^"]+"( transform="[^"]+")?) REPLACE=2\.5!<polyline class="BarLine25" $1!g;
